@@ -57,7 +57,7 @@
     color: var(--fg);
     min-height: 100vh;
     overflow-x: hidden;
-    transition: all 0.3s ease;
+    transition: background 0.3s ease, color 0.3s ease;
   }
 
   /* Theme Toggle */
@@ -75,6 +75,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    text-decoration: none;
   }
   .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
 
@@ -97,7 +98,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 1rem 3rem;
-    background: rgba(var(--surface-rgb), 0.95);
+    background: rgba(var(--bg), 0.8);
     backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border);
   }
@@ -108,6 +109,7 @@
     font-weight: 700;
     color: var(--fg);
     text-decoration: none;
+    cursor: pointer;
   }
   .nav-logo span { color: var(--accent); }
 
@@ -339,15 +341,10 @@
   }
 
   /* Animations */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
   .fade-in {
     opacity: 0;
     transform: translateY(30px);
-    transition: all 0.6s ease;
+    transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
   .fade-in.visible { opacity: 1; transform: translateY(0); }
 
@@ -371,9 +368,9 @@
   <ul class="nav-links">
     <li><a href="#" data-page="home" class="nav-link active">Home</a></li>
     <li><a href="#" data-page="skills" class="nav-link">Skills</a></li>
-    <a href="#" class="theme-toggle" id="themeToggle" title="Toggle Theme">
+    <li><a href="#" class="theme-toggle" id="themeToggle" title="Toggle Theme">
       <i class="fas fa-moon"></i>
-    </a>
+    </a></li>
   </ul>
 </nav>
 
@@ -432,7 +429,7 @@
     </div>
   </section>
 
-  <!-- Skills Section -->
+  <!-- Home Page Skills Section -->
   <section style="padding: 5rem 3rem;">
     <div class="block" style="max-width: 1200px; margin: 0 auto;">
       <div class="section-header">
@@ -495,7 +492,7 @@
   </section>
 </div>
 
-<!-- Projects Page -->
+<!-- Skills/Projects Page -->
 <div id="skills" class="page">
   <section style="padding: 8rem 3rem 6rem; max-width: 1200px; margin: 0 auto;">
     <div class="block">
@@ -600,7 +597,7 @@
 </footer>
 
 <script>
-  // Theme Toggle
+  // Theme Toggle Logic
   const themeToggle = document.getElementById('themeToggle');
   const body = document.body;
   
@@ -613,29 +610,26 @@
   const savedTheme = localStorage.getItem('theme') || 'dark';
   setTheme(savedTheme);
   
-  themeToggle.addEventListener('click', () => {
+  themeToggle.addEventListener('click', (e) => {
+    e.preventDefault();
     const current = body.getAttribute('data-theme');
     setTheme(current === 'dark' ? 'light' : 'dark');
   });
 
-  // Navigation
-  const navLinks = document.querySelectorAll('.nav-link');
+  // Navigation Logic
+  const navLinks = document.querySelectorAll('.nav-link, .nav-logo');
   const pages = document.querySelectorAll('.page');
   
   navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
-      navLinks.forEach(l => l.classList.remove('active'));
-      link.classList.add('active');
-      
       const targetPage = link.getAttribute('data-page');
-      pages.forEach(page => page.classList.remove('active'));
-      document.getElementById(targetPage).classList.add('active');
-      
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  });
+      if(!targetPage) return;
 
-  // Scroll Animations
-  const observer = new IntersectionObserver((entries) => {
-    entries.
+      // Update active link
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+      const activeLink = document.querySelector(`.nav-link[data-page="${targetPage}"]`);
+      if(activeLink) activeLink.classList.add('active');
+      
+      // Switch page
+      pages.forEach(page => page.classList.remov
